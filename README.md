@@ -1,7 +1,24 @@
 # Team SBB
-## Explainable Artificial Intelligence (XAI)
-In the scope of **Big Scale Analytics** course, this repository is created by team ***SBB***.
-The objectives of this repository are:
-1. To present "what is XAI".
-2. To share an exemple of XAI using ***Lime*** library on a Kickstarter dataset.
-3. To do some test with other type of XAI's libraries.
+
+## Members
+* Xavier AEBY
+* Tarik BACHA
+* Tanguy BERGUERAND
+* Frederic SPYCHER
+
+## Context
+
+In the scope of the **Big Scale Analytics** course at HEC Lausanne, Team SBB is happy to present its two projects.
+
+## Project 1: Explainable Artificial Intelligence (XAI)
+
+The goal of this project is to introduce the subject of XAI and exemplify it by showcasing several Python libraries: LIME, ELI5, Skater, and SHAP. We worked with data about Kickstarter used in a [previous project](https://github.com/tbacha/DMML2019_Team_Apple).
+
+### Structure
+
+* `Team_SBB_project_1_Explainable_AI.ipynb`: main notebook
+* `/_kickstarter_data`: dataset and relevant notebooks/Python functions that we extracted from the GitHub linked above 
+* `/documents`: contains our video (also uploaded to YouTube) and PowerPoint presentation
+
+
+## Project 2: TBD
