@@ -26,8 +26,8 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         elif scaling == "minmax":
             goal_mm = pd.DataFrame(mm.fit_transform(data["usd_goal_real"].to_numpy().reshape(-1, 1)))
             X = pd.concat((X, goal_mm), axis=1)
-        else:
-            X = pd.concat((X, data["usd_goal_real"]), axis=1)
+        elif scaling=='none':
+            X = pd.concat((X, data["usd_goal_real"]/1000), axis=1)
             
     if "time" in features:
         if scaling == "std":
@@ -36,8 +36,8 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         elif scaling == "minmax":
             time_mm = pd.DataFrame(mm.fit_transform(pd.to_numeric(data["elapsed_time"]).to_numpy().reshape(-1, 1)))
             X = pd.concat((X, time_mm), axis=1)
-        else:
-            X = pd.concat((X, pd.to_numeric(data["elapsed_time"])), axis=1)
+        elif scaling=='none':
+            X = pd.concat((X, pd.to_numeric(data["elapsed_time"]/86400000000000)), axis=1)
             
     if "category" in features:
         if encoding == "onehot":
@@ -46,7 +46,8 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         elif encoding == "label":
             cat_le = pd.DataFrame(le.fit_transform(data["category"]), columns=["category"])
             X = pd.concat((X, cat_le), axis=1)
-            
+            map_cat=list(le.classes_)
+
     if "main_category" in features:
         if encoding == "onehot":
             main_cat_oh = pd.DataFrame(one_hot.fit_transform(data[["main_category"]]).toarray())
@@ -54,6 +55,7 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         elif encoding == "label":
             main_cat_le = pd.DataFrame(le.fit_transform(data["main_category"]), columns=["main_category"])
             X = pd.concat((X, main_cat_le), axis=1)
+            map_main = list(le.classes_)
             
     if "country" in features:
         if encoding == "onehot":
@@ -62,6 +64,7 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         elif encoding == "label":
             country_le = pd.DataFrame(le.fit_transform(data["country"]), columns=["country"])
             X = pd.concat((X, country_le), axis=1)
+            map_cou = list(le.classes_)
             
     if pca != False:
         pca_fitted = PCA(n_components=pca).fit_transform(X)
@@ -73,5 +76,6 @@ def custom_split(data, predict, rseed, scaling, encoding, pca, poly, features):
         y = np.array(y)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=rseed)
+
     
-    return X_train, X_test, y_train, y_test
+    return X_train, X_test, y_train, y_test, map_cat,map_main,map_cou
