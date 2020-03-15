@@ -21,6 +21,6 @@ The goal of this project is to introduce the subject of XAI and to exemplify it 
 * For the notebook to run in Colab, the three files listed below must be uploaded manually. 
   * `cleaning.py`: cleaned version of the Kickstarter dataset
   * `custom_functions_SBB.py`: new version of the `custom_functions` module, updated for XAI purposes
-  * `model_evaluation_utils.py`: useful module for performance metrics
+  * `model_evaluation_utils.py`: useful module containing a mix of different performance metrics, by Dipanjan Sarkar (Google)
 
 ## Project 2: TBD
