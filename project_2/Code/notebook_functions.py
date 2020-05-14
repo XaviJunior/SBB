@@ -2,6 +2,7 @@ import re
 import string
 
 from nltk.corpus import wordnet
+from nltk.stem.snowball import SnowballStemmer
 import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -9,6 +10,7 @@ import spacy
 from spacy.lang.en.stop_words import STOP_WORDS
 
 nlp = spacy.load('en_core_web_sm')
+stemmer = SnowballStemmer(language='english')
 punctuation = string.punctuation
 
 
@@ -35,12 +37,12 @@ def replace_elongated_words(row):
     return row
 
 
-def clean_tweet(tweet, remove_numbers=False, remove_users=False, remove_rt=False, remove_elongated=False, remove_punctuation=False):
+def clean_tweet(tweet, split_hashtags=False, remove_numbers=False, remove_users=False, remove_rt=False, remove_elongated=False, remove_punctuation=False):
     tweet = re.sub(r" \w{1,3}\.{3,3} http\S{0,}", " ", tweet)  # remove truncated endings
     tweet = re.sub(r"http\S{0,}", " ", tweet)  # remove other URLs
     tweet = re.sub(r".Û.", "'", tweet)  # replace strange representation of apostrophe
     tweet = re.sub(r"\bx....\b", " ", tweet)  # remove hexadecimal characters
-    tweet = re.sub(r'(?<!\w)([A-Z])\.', r'\1', tweet)
+    tweet = re.sub(r'(?<!\w)([A-Z])\.', r'\1', tweet)  # remove periods in acronyms
     
     # replace HTML codes
     tweet = re.sub(r"&amp;", "&", tweet)
@@ -48,7 +50,10 @@ def clean_tweet(tweet, remove_numbers=False, remove_users=False, remove_rt=False
     tweet = re.sub(r"&gt;", ">", tweet)
     
     # correct some typos
-    tweet = re.sub(r"Norf", "North", tweet)
+    tweet = re.sub(r"\bNorf\b", "North", tweet)
+    
+    if split_hashtags:
+        tweet = " ".join([a for a in re.split('(#[A-Z][a-z]+)',tweet) if a])  # split hashtags with ThisPattern
     
     if remove_numbers:
         tweet = re.sub(r"\b[0-9]+\b", "", tweet)  # remove tokens with numbers only
@@ -64,7 +69,7 @@ def clean_tweet(tweet, remove_numbers=False, remove_users=False, remove_rt=False
     
     if remove_punctuation:
         tweet = re.sub(r"[^a-zA-Z0-9']", " ", tweet)  # keep alphanumerical characters + apostrophe only
-        
+
     tweet = re.sub(r"\s+|\t|\n", " ", tweet)  # remove all white spaces, tabs and newlines
     
     return tweet.strip()
@@ -98,7 +103,7 @@ def token_counter(df, ngram_range):
 
 def tokenizer(tweet):
     tokens = nlp(tweet)
-    tokens = [word.lemma_.lower().strip() if word.lemma_ != "-PRON-" else word.lower_ for word in tokens]
+    tokens = [word.lemma_.lower().strip() if word.lemma_ != "-PRON-" else word.lower_ for word in tokens]  # stemmer.stem(word.text).strip()
     tokens = [word for word in tokens if word not in nlp.Defaults.stop_words and word not in punctuation]
     
     return tokens
