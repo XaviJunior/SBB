@@ -23,4 +23,18 @@ The goal of this project is to introduce the subject of XAI and to exemplify it 
   * `custom_functions_SBB.py`: new version of the `custom_functions` module, updated for XAI purposes
   * `model_evaluation_utils.py`: useful module containing a mix of different performance metrics, by Dipanjan Sarkar (Google)
 
-## Project 2: TBD
+## Project 2: Real or Not? NLP with Disaster Tweets (Kaggle Competition)
+
+The goal of this project is to train a model that can predict, using natural language processing (NLP), whether tweets about natural or man-made disasters are genuine.
+
+### Files
+
+#### Code
+
+* `Team_SBB_project_2_Disaster_tweets.ipynb`: main notebook, which contains a link to our YouTube video; a description of the context and data; information about the cleaning, vectorization and training processes; model evaluation and final observations.
+* `notebook_functions.py`: custom code that was separated from the main notebook to avoid unnecessary clutter (for the notebook to run in Colab, this file must be uploaded manually). 
+
+#### Data
+
+* `train.csv` / `test.csv`: datasets were provided by Kaggle. The former is classified and therefore used for training. The classes are missing from the latter and thus need to be predicted using the model.
+* `cleaning_tests.xlsx`: results from some of the tests we performed to determine our cleaning strategy.
