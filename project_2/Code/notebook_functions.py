@@ -1,6 +1,7 @@
 import re
 import string
 
+from keras import backend as K
 from lime.lime_text import LimeTextExplainer
 from nltk.corpus import wordnet
 from nltk.stem.snowball import SnowballStemmer
@@ -18,6 +19,11 @@ punctuation = string.punctuation
 train_url = "https://raw.githubusercontent.com/XaviJunior/SBB/master/project_2/Data/train.csv"
 test_url = "https://raw.githubusercontent.com/XaviJunior/SBB/master/project_2/Data/test.csv"
 
+
+"""
+CLEANING
+
+"""
 
 def replace_elongated_word(word):
     """
@@ -94,6 +100,11 @@ def clean(df, df_test, args, export=False):
     return df, df_test
 
 
+"""
+VECTORIZATION
+
+"""
+
 def token_counter(df, ngram_range):
     vectorizer = CountVectorizer(ngram_range=ngram_range, stop_words="english")
     vectorizer.fit(df["text"])
@@ -130,6 +141,10 @@ def create_vectorizer(mode, ngram_range, remove_tokens):
     return vectorizer
 
 
+"""
+PREDICTIONS
+
+"""
 def lime_plot(classifier, vectorizer, tweet, num_features):
     explainer = LimeTextExplainer(class_names=[0,1])
     c = make_pipeline(vectorizer, classifier)
@@ -152,6 +167,11 @@ def get_predictions(classifier, vectorizer, to_fit, test_data, test_name, export
     
     return test_data, probabilities
     
+
+"""
+DATA AUGMENTATION
+
+"""
 
 def augment_dataset(fitted_classifier, vectorizer, cleaning_args,
                     test_data_with_predictions, probabilities,
@@ -183,3 +203,31 @@ def augment_dataset(fitted_classifier, vectorizer, cleaning_args,
     y_augm = df_augm["target"].values.tolist()
 
     return X_augm, y_augm
+
+
+"""
+NEURAL NETWORK EVALUATION
+
+"""
+
+def precision_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+    precision = true_positives / (predicted_positives + K.epsilon())
+    
+    return precision
+
+
+def recall_m(y_true, y_pred):
+    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
+    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
+    recall = true_positives / (possible_positives + K.epsilon())
+    
+    return recall
+
+
+def f1_m(y_true, y_pred):
+    precision = precision_m(y_true, y_pred)
+    recall = recall_m(y_true, y_pred)
+    
+    return 2*((precision*recall)/(precision+recall+K.epsilon()))
